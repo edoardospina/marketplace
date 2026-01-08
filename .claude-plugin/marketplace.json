@@ -1,0 +1,28 @@
+{
+  "name": "edinho-marketplace",
+  "owner": {
+    "name": "Edinho",
+    "email": "edinho@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "basics",
+      "source": "./basics",
+      "description": "Skills; deepwiki, jq, markitdown",
+      "version": "1.0.0",
+      "author": {
+        "name": "Edinho"
+      }
+    },
+    {
+      "name": "langflow",
+      "source": "./langflow",
+      "description": "Develop and run with Langflow",
+      "version": "1.0.0",
+      "author": {
+        "name": "Edinho"
+      }
+    }
+
+  ]
+}
