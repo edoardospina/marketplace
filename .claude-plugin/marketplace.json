@@ -6,8 +6,9 @@
     "email": "edinho@gmail.com"
   },
   "plugins": [
-    { "source": "./basics" },
+    { "source": "./jsonq" },
     { "source": "./langflow" },
-    { "source": "./deepwiki" }
+    { "source": "./deepwiki" },
+    { "source": "./markitdown" }
   ]
 }

@@ -1,6 +1,6 @@
 # Skills and Tools policy
 
-When the user prompts you, always chekc if you should use one (or multiple) skills or an agents from the plugin-dev plugin, most likely the answer will be yes, you do!
+When the user prompts you, always check if you should use one (or multiple) skills or an agents from the plugin-dev plugin, most likely the answer will be yes, you do!
 
 # Apple versions
 

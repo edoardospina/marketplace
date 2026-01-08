@@ -1,0 +1,10 @@
+{
+  "name": "markitdown",
+  "description": "Essential utility skill: markitdown for document conversion",
+  "version": "1.0.1",
+  "author": {
+    "name": "Edinho",
+    "email": "edinho@gmail.com"
+  },
+  "keywords": ["markdown", "conversion", "utilities"]
+}

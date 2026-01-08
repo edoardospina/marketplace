@@ -18,30 +18,11 @@ Once installed, plugins will automatically update when you push changes to this 
 
 ## Available Plugins
 
-### 1. basics
-
-**Version:** 1.0.1
-**Description:** helps Claude Code with common interactions (e.g. read json files, use markitdown)
-
-[View basics plugin documentation →](./basics/README.md)
-
-### 2. langflow
-
-**Version:** 1.0.0
-**Description:** develop and run Langflow via Claude Code
-
-[View langflow plugin documentation →](./langflow/README.md)
-
-### 3. deepwiki
-
-**Version:** 1.0.0
-**Description:** Deepwiki mcp and skill
-
-[View deepwiki plugin documentation →](./deepwiki/README.md)
+See **marketplace.json** for [available plugins →](./.claude-plugin/marketplace.json)
 
 ## Work In Progress
 
-**Multiple projects** our github repo tracks work in progress in [our .wip folder →](./.wip/)
+We are working on **multiple new plugins** and our github repo tracks them in [our .wip folder →](./.wip/)
 
 ## Plugin Structure
 
@@ -54,6 +35,7 @@ plugin-name/
 │   ├── commands/            # Slash commands (optional)
 │   ├── agents/              # Autonomous agents (optional)
 │   ├── skills/              # Reusable prompts (optional)
+│   ├── .mcp.json            # MCP servers connections (optional)
 │   └── hooks/               # Event hooks (optional)
 ├── README.md                # Plugin documentation
 └── LICENSE                  # MIT License

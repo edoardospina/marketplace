@@ -1,0 +1,10 @@
+{
+  "name": "jsonq",
+  "description": "Essential utility skill: jsonq for JSON querying",
+  "version": "1.0.1",
+  "author": {
+    "name": "Edinho",
+    "email": "edinho@gmail.com"
+  },
+  "keywords": ["json", "utilities"]
+}

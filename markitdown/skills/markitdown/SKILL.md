@@ -1,7 +1,9 @@
 ---
 name: markitdown
 description: |
-  This skill should be used when the user asks to "convert this PDF to markdown", "read this Word document", "extract text from this image", "analyze this spreadsheet", "transcribe this audio file", "transcribe this YouTube", "what does this document say", "parse this Excel file", "OCR this image", "summarize this PDF", "convert to markdown", "what's in this file", "help me read this PPTX", or needs to process binary documents for analysis. Supports PDF, DOCX, PPTX, XLSX, XLS, HTML, CSV, JSON, XML, images (OCR), audio (transcription), YouTube URLs, EPUB, and ZIP files.
+  This skill should be used when the user asks to "convert this PDF to markdown", "read this Word document", "extract text from this image", "analyze this spreadsheet", "transcribe this audio file", "transcribe this YouTube video", "what does this document say", "parse this Excel file", "OCR this image", "summarize this PDF", "convert to markdown", "what's in this file", "help me read this PPTX", or needs to process binary documents for analysis. Supports PDF, DOCX, PPTX, XLSX, XLS, HTML (local files), CSV, JSON, XML, images (OCR), audio (transcription), YouTube URLs (for transcription), EPUB, and ZIP files.
+
+  This skill should NOT be used when the user asks to "fetch this webpage", "scrape this URL", "get content from this website", "read this website", or needs to retrieve and convert content from http:// or https:// web page URLs. For web page retrieval, use Claude Code's native WebFetch tool, or use firecrawl-mcp/firecrawl skills if installed. Note: YouTube URLs are supported for video transcription—this is the only web URL type markitdown handles directly.
 version: 1.0.0
 ---
 
