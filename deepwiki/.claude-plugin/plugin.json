@@ -3,6 +3,8 @@
   "description": "DeepWiki MCP integration for analyzing public GitHub, GitLab, and Bitbucket repositories with AI-generated documentation",
   "version": "1.0.0",
   "author": {
-    "name": "Edinho"
-  }
+    "name": "Edinho",
+    "email": "edinho@gmail.com"
+  },
+  "keywords": ["deepwiki", "github", "documentation", "repository-analysis"]
 }
