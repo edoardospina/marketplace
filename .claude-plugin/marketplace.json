@@ -6,9 +6,10 @@
     "email": "edinho@gmail.com"
   },
   "plugins": [
+    { "source": "./deepwiki" },
+    { "source": "./firecrawl" },
     { "source": "./jsonq" },
     { "source": "./langflow" },
-    { "source": "./deepwiki" },
     { "source": "./markitdown" }
   ]
 }

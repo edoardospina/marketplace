@@ -1,6 +1,6 @@
 {
   "enabledPlugins": {
     "plugin-dev@claude-plugins-official": true,
-    "firecrawl-scraper@claude-skills": true
+    "firecrawl-scraper@claude-skills": false
   }
 }

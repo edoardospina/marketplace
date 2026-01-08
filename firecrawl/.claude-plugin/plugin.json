@@ -1,0 +1,10 @@
+{
+  "name": "firecrawl",
+  "description": "Web scraping, crawling, and content extraction via Firecrawl API",
+  "version": "1.0.0",
+  "author": {
+    "name": "Edinho",
+    "email": "edinho@gmail.com"
+  },
+  "keywords": ["firecrawl", "scrape", "crawl", "map-website"]
+}
