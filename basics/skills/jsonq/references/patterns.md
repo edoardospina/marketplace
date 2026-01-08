@@ -1,5 +1,7 @@
 # Advanced jq Patterns and Troubleshooting
 
+> This reference covers advanced jq techniques. For core concepts and basic usage, see the main SKILL.md.
+
 ## Complex Filtering Patterns
 
 ### Nested Object Queries

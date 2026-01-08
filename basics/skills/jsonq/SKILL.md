@@ -1,6 +1,6 @@
 ---
 name: jsonq
-description: This skill should be used when the user asks to "read a JSON file", "analyse a JSON file", "explain the structure of a JSON file", "show the schema of a JSON", "parse JSON", "query JSON", "extract data from JSON", "filter JSON", "transform JSON data", or mentions working with .json files in any capacity.
+description: This skill should be used when the user asks to "read a JSON file", "analyse a JSON file", "explain the structure of a JSON file", "show the schema of a JSON", "parse JSON", "query JSON", "extract data from JSON", "filter JSON", "transform JSON data", "jq command", "jq query", "jq filter", "merge JSON files", "aggregate JSON data", "validate JSON", "OpenAPI spec", "swagger file", or mentions working with .json files in any capacity.
 ---
 
 # JSON Query Skill (jsonq)
@@ -166,4 +166,5 @@ jq '.items | map(select(. != null))' file.json
 ## Additional Resources
 
 For detailed patterns, advanced filters, and troubleshooting:
-- **`references/patterns.md`** - Advanced jq patterns and complex queries
+- **`references/patterns.md`** - Advanced jq patterns: multi-condition filtering, aggregation (sum/avg/group), data transformation, streaming for large files, working with multiple files, custom functions, and troubleshooting
+- **`references/openapi.md`** - Specialized patterns for querying OpenAPI/Swagger JSON specifications: endpoints, schemas, parameters, and API structure analysis
