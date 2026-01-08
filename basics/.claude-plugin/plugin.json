@@ -1,7 +1,7 @@
 {
 "name": "basics",
-"description": "Skills; deepwiki, jq, markitdown",
-"version": "1.0.0",
+"description": "Skills: jq, markitdown",
+"version": "1.0.1",
 "author": {
 "name": "Edinho"
 }

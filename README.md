@@ -20,8 +20,8 @@ Once installed, plugins will automatically update when you push changes to this 
 
 ### 1. basics
 
-**Version:** 1.0.0
-**Description:** helps Claude Code with common interactions (e.g. read json files, use markitdown, use deepwiki, ...)
+**Version:** 1.0.1
+**Description:** helps Claude Code with common interactions (e.g. read json files, use markitdown)
 
 [View basics plugin documentation →](./basics/README.md)
 
@@ -31,6 +31,13 @@ Once installed, plugins will automatically update when you push changes to this 
 **Description:** develop and run Langflow via Claude Code
 
 [View langflow plugin documentation →](./langflow/README.md)
+
+### 3. deepwiki
+
+**Version:** 1.0.0
+**Description:** Deepwiki mcp and skill
+
+[View deepwiki plugin documentation →](./deepwiki/README.md)
 
 ## Work In Progress
 
