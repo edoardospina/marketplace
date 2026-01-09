@@ -7,7 +7,6 @@
   },
   "plugins": [
     { "name": "deepwiki", "source": "./deepwiki" },
-    { "name": "firecrawl", "source": "./firecrawl" },
     { "name": "jsonq", "source": "./jsonq" },
     { "name": "langflow", "source": "./langflow" },
     { "name": "markitdown", "source": "./markitdown" }

@@ -7,15 +7,3 @@ The visual editor simplifies prototyping of application workflows, enabling deve
 Langflow can help you develop a wide variety of AI applications, such as chatbots, document analysis systems, content generators, and agentic applications.
 
 Langflow includes several pre-built templates that are ready to use or customize to your needs.
-
-# Langflow API
-
-You can use the Langflow API for programmatic interactions with Langflow, such as the following:
-
-- Create and edit flows, including file management for flows.
-- Develop applications that use your flows.
-- Develop custom components.
-- Build Langflow as a dependency of a larger application, codebase, or service.
-- Contribute to the overall Langflow codebase.
-
-**IMPORTANT:** To view and test all available endpoints, you can access the Langflow API's OpenAPI specification at your Langflow deployment's /docs endpoint, such as http://localhost:7860/docs
