@@ -1,6 +1,6 @@
-from langflow.custom import Component
-from langflow.io import MessageTextInput, Output
-from langflow.schema import Data
+from lfx.custom.custom_component.component import Component
+from lfx.io import MessageTextInput, Output
+from lfx.schema import Data
 import re
 
 class TextAnalyzerComponent(Component):
