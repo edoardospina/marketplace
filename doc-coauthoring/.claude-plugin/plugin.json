@@ -1,0 +1,10 @@
+{
+  "name": "doc-coauthoring",
+  "description": "Guide users through a structured workflow for co-authoring documentation. Use when user wants to write docs, create proposals, draft technical specs, design docs, decision docs, RFCs, PRDs, or similar structured content. Triggers on phrases like 'write a doc', 'draft a proposal', 'create a spec', 'write up', 'help me document'.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Edinho",
+    "email": "edinho@gmail.com"
+  },
+  "keywords": ["documentation", "writing", "proposals", "specs", "PRD", "RFC", "decision-docs", "technical-writing", "utilities"]
+}

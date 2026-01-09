@@ -7,6 +7,7 @@
   },
   "plugins": [
     { "name": "deepwiki", "source": "./deepwiki" },
+    { "name": "doc-coauthoring", "source": "./doc-coauthoring" },
     { "name": "jsonq", "source": "./jsonq" },
     { "name": "langflow", "source": "./langflow" },
     { "name": "markitdown", "source": "./markitdown" }
