@@ -1,15 +1,15 @@
 ---
 name: langflow
-description: This skill should be used when the user asks to "create a Langflow flow", "build a Langflow component", "run a Langflow workflow", "configure Langflow server", "deploy Langflow", "use Langflow API", "create custom Langflow component", "connect Langflow to MCP", "debug Langflow flow", "set up Langflow environment variables", mentions "langflow.org", works with Langflow JSON files, or needs guidance on AI workflow automation, LLM application building, RAG pipelines, or agent workflows in Langflow.
+description: This skill should be used when the user asks about "Langflow", "langflow.org", "lfx", "create a Langflow flow", "build Langflow component", "run Langflow workflow", "configure Langflow server", "deploy Langflow", "install Langflow", "Langflow API", "Langflow CLI", "custom Langflow component", "Langflow MCP integration", "debug Langflow", "Langflow docker", "Langflow environment variables", "Langflow agent", works with Langflow JSON files, or needs guidance on Langflow AI workflow automation, visual flow building, RAG pipelines, or agentic workflows.
 ---
 
 # Langflow Knowledge Base
 
 Langflow is an open-source, Python-based, low-code platform for building AI applications. It provides a visual editor for creating workflows (called "flows") that can include agents, LLMs, RAG pipelines, and custom components.
 
-**Current Version:** 1.7.1 (as of OpenAPI spec)
 **Documentation:** https://docs.langflow.org/
 **Repository:** https://github.com/langflow-ai/langflow
+**Mapped Version:** 1.7.1 (update via `scripts/fetch-docs.sh` or check `jq '.info.version' resources/openapi.json`)
 
 ## Quick Reference
 
@@ -21,6 +21,10 @@ Langflow is an open-source, Python-based, low-code platform for building AI appl
 | `resources/custom-components.md` | Creating custom Python components |
 | `resources/api-reference.md` | REST API usage and endpoints |
 | `resources/cli-reference.md` | CLI commands and configuration |
+| `resources/mcp-integration.md` | MCP server/client integration guide |
+| `resources/bundles-reference.md` | Third-party bundle integrations (LLMs, vector stores) |
+| `scripts/fetch-docs.sh` | Fetch latest Langflow documentation and OpenAPI spec |
+| `scripts/query-api.sh` | Query OpenAPI specification with jq helpers |
 
 ## Architecture Overview
 
@@ -70,16 +74,16 @@ A **flow** is a directed acyclic graph (DAG) of components that process data. Fl
 - Can be connected via typed ports (color-coded)
 
 **Port Colors (Data Types):**
-| Type | Color | Description |
-|------|-------|-------------|
-| Data | Red | Structured key-value data |
-| DataFrame | Pink | Tabular pandas data |
-| Embeddings | Emerald | Vector embeddings |
-| LanguageModel | Fuchsia | LLM instance |
-| Memory | Orange | Chat memory |
-| Message | Indigo | Chat messages |
-| Tool | Cyan | Agent tools |
-| Unknown | Gray | Multiple types |
+| Type | Color |
+|------|-------|
+| Data | Red |
+| Message | Indigo |
+| LanguageModel | Fuchsia |
+| Tool | Cyan |
+| Embeddings | Emerald |
+| Memory | Orange |
+
+See `resources/components-guide.md` for complete port color reference and data type schemas.
 
 ### Agents
 The **Agent** component is central to agentic flows:
@@ -228,6 +232,8 @@ Langflow supports the Model Context Protocol (MCP):
 **As MCP Server:** Each project exposes flows as tools at `/api/v1/mcp/`
 **As MCP Client:** Use the MCP Tools component to connect to external MCP servers
 
+See `resources/mcp-integration.md` for Claude Code integration examples and detailed configuration.
+
 ## Querying the OpenAPI Spec
 
 Use `jq` to explore the API specification:
@@ -290,4 +296,6 @@ jq '.components.schemas.Flow' resources/openapi.json
 - **Custom Components:** `resources/custom-components.md`
 - **API Reference:** `resources/api-reference.md`
 - **CLI Reference:** `resources/cli-reference.md`
+- **MCP Integration:** `resources/mcp-integration.md`
+- **Bundles Reference:** `resources/bundles-reference.md`
 - **Official Docs:** https://docs.langflow.org/

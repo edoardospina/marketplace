@@ -58,36 +58,144 @@ Import from `lfx.io`:
 
 ```python
 from lfx.io import (
-    StrInput,           # Single-line text
-    MultilineInput,     # Multi-line text
-    IntInput,           # Integer
-    FloatInput,         # Float
-    BoolInput,          # Toggle
-    DropdownInput,      # Selection
-    FileInput,          # File upload
-    CodeInput,          # Code editor
-    DataInput,          # Data object
-    MessageTextInput,   # Message-compatible text
-    HandleInput,        # Generic handle
+    # Text Inputs
+    StrInput,           # Single/multi-line text (password, multiline options)
+    MultilineInput,     # Multi-line text area
+    MessageTextInput,   # Message-compatible text input
+    SecretStrInput,     # Masked input for API keys (loads from global variables)
+    CodeInput,          # Code editor with syntax highlighting
+    LinkInput,          # URL/link input
+    QueryInput,         # Query-related input
+
+    # Numeric Inputs
+    IntInput,           # Integer with optional range_spec
+    FloatInput,         # Float with optional range_spec
+    SliderInput,        # Numeric slider within range
+
+    # Selection Inputs
+    BoolInput,          # Toggle switch
+    DropdownInput,      # Selection with options, combobox, real_time_refresh
+    MultiselectInput,   # Multiple selection from options
+    TabInput,           # Tab-based selection (organizes inputs into tabs)
+
+    # Data Inputs
+    DataInput,          # Data objects
+    DataFrameInput,     # DataFrame objects
+    FileInput,          # File upload with fileTypes filter
+    TableInput,         # Tabular data with table_schema
+    HandleInput,        # Generic typed handle for connections
 )
 ```
+
+### Complete Input Types Reference
+
+| Input Type | Description | Key Parameters |
+|------------|-------------|----------------|
+| `StrInput` | Single/multi-line text | `multiline`, `password` |
+| `MultilineInput` | Multi-line text area | - |
+| `MessageTextInput` | Text accepting `Message` objects | `input_types=["Message"]` |
+| `SecretStrInput` | Masked API keys | `password=True`, `load_from_db=True` |
+| `CodeInput` | Code editor | `multiline=True` |
+| `LinkInput` | URL input | - |
+| `QueryInput` | Query input | - |
+| `IntInput` | Integer values | `range_spec` |
+| `FloatInput` | Float values | `range_spec` |
+| `SliderInput` | Numeric slider | `range_spec` |
+| `BoolInput` | Toggle switch | - |
+| `DropdownInput` | Single selection | `options`, `combobox`, `refresh_button` |
+| `MultiselectInput` | Multiple selection | `options` |
+| `TabInput` | Tab organization | `options` |
+| `DataInput` | Data objects | `input_types` |
+| `DataFrameInput` | DataFrame objects | `input_types` |
+| `FileInput` | File upload | `fileTypes` |
+| `TableInput` | Tabular data | `table_schema` |
+| `HandleInput` | Generic connection | `input_types` |
 
 ### Input Parameters
 
+All input types share common parameters from `BaseInputMixin`:
+
 ```python
 StrInput(
-    name="field_name",           # Access via self.field_name
-    display_name="Field Name",   # UI label
-    info="Help text",            # Tooltip
+    # Core Parameters
+    name="field_name",           # Internal identifier (access via self.field_name)
+    display_name="Field Name",   # UI label shown to user
+    info="Help text",            # Tooltip/help text
     value="default",             # Default value
-    required=True,               # Required field
-    advanced=False,              # Show in advanced section
-    show=True,                   # Visible by default
-    dynamic=False,               # Can change at runtime
-    real_time_refresh=False,     # Trigger update_build_config
-    tool_mode=False,             # Enable Tool Mode support
+
+    # Display Controls
+    required=True,               # Field must be provided
+    advanced=False,              # Show in "Advanced" section (hidden by default)
+    show=True,                   # Visible in UI (False hides completely)
+
+    # Dynamic Behavior
+    dynamic=False,               # Properties can change at runtime via update_build_config
+    real_time_refresh=False,     # Triggers update_build_config when value changes
+
+    # Connection & Types
+    input_types=["str", "Message"],  # Acceptable connection types from other components
+    list=False,                  # Accept multiple values (makes input a list)
+
+    # Data Loading
+    load_from_db=False,          # Load value from global variables/secrets
+
+    # Tool Mode
+    tool_mode=False,             # Enable Tool Mode for Agent integration
 )
 ```
+
+### Parameter Reference
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | str | Internal identifier; access value via `self.name` |
+| `display_name` | str | Label shown in the visual editor UI |
+| `info` | str | Tooltip/help text shown on hover |
+| `value` | Any | Default value for the input |
+| `required` | bool | If `True`, input must be provided |
+| `advanced` | bool | If `True`, shown in "Advanced" section |
+| `show` | bool | If `False`, input is hidden from UI |
+| `dynamic` | bool | If `True`, properties can change via `update_build_config` |
+| `real_time_refresh` | bool | If `True`, triggers `update_build_config` on value change |
+| `input_types` | list | Acceptable connection types (e.g., `["Data", "Document"]`) |
+| `list` | bool | If `True`, input accepts multiple values |
+| `load_from_db` | bool | If `True`, loads value from global variables |
+| `tool_mode` | bool | If `True`, enables Tool Mode for Agent use |
+
+### Numeric Inputs with RangeSpec
+
+Use `range_spec` to define min, max, and step for numeric inputs:
+
+```python
+from lfx.field_typing import RangeSpec
+
+IntInput(
+    name="max_tokens",
+    display_name="Max Tokens",
+    value=1000,
+    range_spec=RangeSpec(min=0, max=128000, step=1)
+)
+
+FloatInput(
+    name="temperature",
+    display_name="Temperature",
+    value=0.7,
+    range_spec=RangeSpec(min=0.0, max=2.0, step=0.1)
+)
+
+SliderInput(
+    name="polling_interval",
+    display_name="Polling Interval",
+    value=5.0,
+    range_spec=RangeSpec(min=3, max=30, step=0.1)
+)
+```
+
+**RangeSpec Parameters:**
+- `min`: Minimum allowed value
+- `max`: Maximum allowed value
+- `step`: Increment/decrement value
+- `step_type`: `"int"` or `"float"`
 
 ### Dropdown Input
 
@@ -96,7 +204,61 @@ DropdownInput(
     name="model",
     display_name="Model",
     options=["gpt-4", "gpt-3.5-turbo", "claude-3"],
-    value="gpt-4"
+    value="gpt-4",
+    combobox=False,              # Allow custom values (True = user can type custom)
+    refresh_button=False,        # Show refresh button for dynamic options
+    real_time_refresh=True,      # Trigger update_build_config on change
+    dialog_inputs={}             # Inputs shown in a dialog
+)
+```
+
+**Combobox Mode:** When `combobox=True`, users can type custom values in addition to selecting from predefined options.
+
+### Multiselect Input
+
+```python
+MultiselectInput(
+    name="file_types",
+    display_name="Allowed File Types",
+    options=["pdf", "txt", "docx", "csv"],
+    value=["pdf", "txt"]         # Default selected values
+)
+```
+
+### Secret Input
+
+```python
+SecretStrInput(
+    name="api_key",
+    display_name="API Key",
+    password=True,               # Mask input in UI
+    load_from_db=True            # Load from global variables
+)
+```
+
+### File Input
+
+```python
+FileInput(
+    name="document",
+    display_name="Upload Document",
+    fileTypes=["pdf", "txt", "docx"]  # Accepted file extensions
+)
+```
+
+### Table Input
+
+```python
+TableInput(
+    name="mapping",
+    display_name="Field Mapping",
+    table_schema={
+        "columns": [
+            {"name": "source", "type": "string", "edit_mode": "text"},
+            {"name": "target", "type": "string", "edit_mode": "dropdown",
+             "options": ["field1", "field2"]}
+        ]
+    }
 )
 ```
 
@@ -116,7 +278,23 @@ BoolInput(
 DataInput(
     name="data_input",
     display_name="Input Data",
-    input_types=["Document", "Data"],  # Accepted types
+    input_types=["Document", "Data"],  # Accepted connection types
+)
+
+DataFrameInput(
+    name="df_input",
+    display_name="DataFrame",
+    input_types=["DataFrame", "Data"]
+)
+```
+
+### Handle Input
+
+```python
+HandleInput(
+    name="model_connection",
+    display_name="Model",
+    input_types=["LanguageModel"]    # Generic typed handle for connections
 )
 ```
 
@@ -175,9 +353,25 @@ def process(self) -> Message:
     return Message(text=result)
 ```
 
-### Using Context
+## Execution Hooks and Lifecycle
 
-Share data between methods:
+Langflow components have several hooks and methods for controlling execution behavior.
+
+### `_pre_run_setup()` - Initialization Hook
+
+Called during the "Validation and Setup" phase before main execution begins. Use to initialize component state:
+
+```python
+def _pre_run_setup(self):
+    """Initialize state before execution."""
+    self.ctx["counter"] = 0
+    self.ctx["processed_items"] = []
+    self.ctx["start_time"] = time.time()
+```
+
+### `self.ctx` - Context Dictionary
+
+A dictionary for sharing data between different method calls within a component:
 
 ```python
 def _pre_run_setup(self):
@@ -186,7 +380,67 @@ def _pre_run_setup(self):
 def process_item(self) -> Data:
     self.ctx["counter"] += 1
     return Data(data={"count": self.ctx["counter"]})
+
+def get_summary(self) -> Message:
+    total = self.ctx["counter"]
+    return Message(text=f"Processed {total} items")
 ```
+
+### `self.status` - UI Status Message
+
+Display short messages about execution results in the visual editor:
+
+```python
+def process(self) -> Data:
+    result = self.query_database()
+    self.status = f"Found {len(result)} rows"  # Shown on component in UI
+    return Data(data={"rows": result})
+```
+
+### `self.log()` - Component Logging
+
+Record execution details to the component's "Logs" panel (distinct from application logs):
+
+```python
+def process(self) -> Data:
+    self.log("Starting database query...")
+    try:
+        result = self.execute_query()
+        self.log(f"Query returned {len(result)} rows")
+        return Data(data=result)
+    except Exception as e:
+        self.log(f"Error: {str(e)}")
+        raise
+```
+
+### `self.stop()` - Halt Output Path
+
+Stop a specific output path without stopping other outputs:
+
+```python
+def process(self) -> Data:
+    if not self.is_valid:
+        self.stop("output_name")  # Stops only this output path
+        return Data(data={"error": "Invalid input"})
+
+    # Continue with valid data...
+    return Data(data={"result": self.compute()})
+```
+
+**Use cases for `self.stop()`:**
+- Loop components: `self.stop("item")` when iteration completes
+- Conditional routing: Stop branches based on conditions
+- Validation: Prevent downstream processing of invalid data
+
+### Lifecycle Summary
+
+| Hook/Method | When Called | Purpose |
+|-------------|-------------|---------|
+| `_pre_run_setup()` | Before execution | Initialize state |
+| `self.ctx` | During execution | Share data between methods |
+| `self.status` | After processing | Display result in UI |
+| `self.log()` | During execution | Log to component's Logs panel |
+| `self.stop()` | During execution | Halt specific output path |
 
 ## Dynamic Fields
 

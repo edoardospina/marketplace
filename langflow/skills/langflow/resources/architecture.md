@@ -13,8 +13,8 @@ Langflow is a low-code platform for building and deploying AI applications, stru
 │  │  - @xyflow/react canvas for visual editing                          │    │
 │  └─────────────────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
+                                   │
+                                   ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                        Frontend - src/frontend                               │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐          │
@@ -23,8 +23,8 @@ Langflow is a low-code platform for building and deploying AI applications, stru
 │  │                  │  │ flowsManagerStore│  │                  │          │
 │  └──────────────────┘  └──────────────────┘  └──────────────────┘          │
 └─────────────────────────────────────────────────────────────────────────────┘
-                                    │ HTTP/WebSocket
-                                    ▼
+                                   │ HTTP/WebSocket
+                                   ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                   Backend - src/backend/base/langflow                        │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐          │
@@ -36,8 +36,8 @@ Langflow is a low-code platform for building and deploying AI applications, stru
 │  │ api/v1/endpoints │  │  api/v1/build    │  │   api/v1/mcp     │          │
 │  └──────────────────┘  └──────────────────┘  └──────────────────┘          │
 └─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
+                                   │
+                                   ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                     Execution Layer - src/lfx                                │
 │  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐          │
@@ -48,18 +48,22 @@ Langflow is a low-code platform for building and deploying AI applications, stru
 │  │              Component Registry (component_index.json)               │   │
 │  └─────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
+                                   │
+                                   ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                          Services Layer                                      │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │                    ServiceManager (Singleton)                         │  │
+│  │                  Dependency Injection Container                       │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
 │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐       │
 │  │ Database     │ │    Cache     │ │     Auth     │ │  Job Queue   │       │
 │  │ SQLAlchemy   │ │  async/redis │ │     JWT      │ │   Async      │       │
 │  │ + Alembic    │ │              │ │              │ │              │       │
 │  └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘       │
 └─────────────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
+                                   │
+                                   ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           Data Layer                                         │
 │  ┌────────────────────────────────┐  ┌────────────────────────────────┐    │
@@ -69,140 +73,147 @@ Langflow is a low-code platform for building and deploying AI applications, stru
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
+## Key Design Patterns
+
+Langflow employs several architectural patterns:
+
+| Pattern | Implementation |
+|---------|----------------|
+| **Visual Editor** | @xyflow/react (ReactFlow v12.3.6) canvas with drag-and-drop nodes |
+| **API-Driven Architecture** | REST API at `/api/v1/*` and `/api/v2/*` with WebSocket streaming |
+| **Component-Based Extensibility** | Custom components via Python classes in registry |
+| **Service Layer with DI** | ServiceManager singleton manages all service dependencies |
+| **DAG-Based Execution** | Topological sorting ensures correct execution order |
+
 ## Frontend Architecture
 
 **Location:** `src/frontend`
 **Technology:** React 19 + Vite + TypeScript
+**Dev Port:** 3000 (proxied to backend in production)
 
-### Key Components
+### Visual Editor
 
-| Component | Purpose |
-|-----------|---------|
-| `FlowEditor` | Main visual flow builder canvas |
-| `GenericNode` | Renders individual components on canvas |
-| `NodeToolbar` | Component actions and controls |
-| `Playground` | Interactive flow testing interface |
+Built on @xyflow/react (ReactFlow v12.3.6), the flow editor provides:
+- Drag-and-drop component placement
+- Edge connections with type validation
+- Real-time collaboration support
+- Interactive node configuration panels
 
-### State Management (Zustand)
+### State Management (Zustand v4.5.2)
 
-- **flowStore**: Current flow state, nodes, edges
-- **flowsManagerStore**: Multiple flows management
-- **typesStore**: Component type definitions
-- **authContext**: User authentication state
+Three-tiered store architecture:
+
+| Store | Purpose |
+|-------|---------|
+| **flowStore** | Current flow state, nodes, edges, build status, real-time updates |
+| **flowsManagerStore** | Multiple flows management, undo/redo with snapshot-before-mutate pattern |
+| **utilityStore** | Global UI settings, feature flags, user preferences |
+
+The **snapshot-before-mutate pattern** in flowsManagerStore captures state before changes, enabling reliable undo/redo operations across complex flow modifications.
 
 ### API Client
 
 Uses Axios with interceptors for:
 - Authentication token injection
-- Error handling
+- Error handling and retry logic
 - Request/response transformation
 
 ## Backend Architecture
 
 **Location:** `src/backend/base/langflow`
 **Technology:** FastAPI + SQLAlchemy + Alembic
+**Default Port:** 7860
 
 ### API Structure
 
 ```
-/api/v1/
-├── run/           # Flow execution
-├── flows/         # Flow CRUD
-├── build/         # Flow building
-├── mcp/           # MCP protocol
-├── files/         # File management
-├── monitor/       # Session monitoring
-├── api_key/       # API key management
-├── login/         # Authentication
-└── custom_component/  # Custom component loading
+/api/v1/                    /api/v2/
+├── run/                    ├── flows/
+├── flows/                  ├── components/
+├── build/                  └── ...
+├── mcp/
+├── files/
+├── monitor/
+├── api_key/
+├── login/
+└── custom_component/
 ```
 
-### Services
+### ServiceManager (Dependency Injection)
 
-| Service | Purpose |
-|---------|---------|
-| `DatabaseService` | SQLAlchemy ORM + Alembic migrations |
-| `CacheService` | Flow and result caching |
-| `AuthService` | JWT authentication and authorization |
-| `JobQueueService` | Async job execution |
+The `ServiceManager` singleton acts as a dependency injection container, providing centralized access to all backend services:
+
+```python
+class ServiceManager:
+    """Singleton managing service dependencies"""
+    database_service: DatabaseService
+    cache_service: CacheService
+    auth_service: AuthService
+    job_queue_service: JobQueueService
+```
+
+Services are lazily initialized and shared across request handlers, ensuring consistent state and efficient resource usage.
 
 ### Flow Execution Pipeline
 
 1. **Request received** at `/api/v1/run/{flow_id}`
-2. **Flow loaded** from database
-3. **Graph constructed** from flow JSON
-4. **JobQueue creates** async execution job
-5. **Vertices executed** in topological order
-6. **Results streamed** back via SSE/WebSocket
+2. **Flow loaded** from database via ServiceManager
+3. **Graph constructed** from flow JSON (DAG representation)
+4. **Topological sort** determines execution order
+5. **Vertices executed** in dependency order
+6. **Results streamed** via SSE/WebSocket
 7. **Response returned** with outputs
 
 ## Execution Engine (lfx)
 
 **Location:** `src/lfx`
-**Purpose:** Portable, independent flow execution library
+**Purpose:** Portable, independent, DAG-based flow execution library
 
 ### Core Classes
 
 ```python
-# Graph - DAG representation
 class Graph:
+    """DAG representation with topological execution"""
     def __init__(self, flow_data: dict)
     def topological_sort() -> List[Vertex]
     async def run() -> Dict[str, Any]
 
-# Vertex - Node wrapper
 class Vertex:
+    """Node wrapper managing component lifecycle"""
     component: Component
     edges: List[Edge]
     async def build() -> VertexBuildResult
 
-# Component - Base class
 class Component:
+    """Base class for all flow components"""
     inputs: List[Input]
     outputs: List[Output]
     def build() -> Any
 ```
 
-### Component Registry
-
-`component_index.json` contains:
-- Component metadata (name, description, icon)
-- Input/output definitions
-- Embedded Python code
-- Category organization
-
 ### Execution Flow
 
 ```
 Flow JSON → Graph → Topological Sort → Execute Vertices → Collect Results
-                          │
-                          ▼
-              ┌───────────────────────┐
-              │ For each vertex:      │
-              │ 1. Instantiate comp.  │
-              │ 2. Set input values   │
-              │ 3. Call build()       │
-              │ 4. Pass to dependents │
-              └───────────────────────┘
+                         │
+                         ▼
+             ┌───────────────────────┐
+             │ For each vertex:      │
+             │ 1. Instantiate comp.  │
+             │ 2. Set input values   │
+             │ 3. Call build()       │
+             │ 4. Pass to dependents │
+             └───────────────────────┘
 ```
 
-## lfx CLI
-
-The `lfx` package includes standalone CLI commands:
+### lfx CLI
 
 ```bash
-# Serve a flow as REST API
-lfx serve flow.json --port 8000
-# Creates endpoint at /flows/{flow_id}/run
-
-# Run a flow directly
-lfx run flow.json --input "Hello"
-# Executes and prints output
+lfx serve flow.json --port 8000   # Serve as REST API
+lfx run flow.json --input "Hello" # Execute directly
 ```
 
 ## Database Schema
-
-Key tables in the Langflow database:
 
 | Table | Purpose |
 |-------|---------|
@@ -213,21 +224,10 @@ Key tables in the Langflow database:
 | `variable` | Global variables (encrypted) |
 | `folder` | Project/folder organization |
 
-## File Storage
-
-Langflow supports multiple storage backends:
-- **Local**: Default, files in config directory
-- **S3**: AWS S3 or compatible (MinIO)
-- **GCS**: Google Cloud Storage
-
-Configured via `LANGFLOW_STORAGE_*` environment variables.
-
 ## MCP Protocol Support
 
-Langflow implements Model Context Protocol:
-
 ### As Server
-- Each project exposes flows as MCP tools
+- Projects expose flows as MCP tools
 - Endpoint: `/api/v1/mcp/project/{project_id}/`
 - Supports SSE and Streamable HTTP transports
 
@@ -235,28 +235,25 @@ Langflow implements Model Context Protocol:
 - MCP Tools component connects to external servers
 - Flows can call tools from any MCP-compatible server
 
-## Development Mode
+## Development vs Production
 
-**Frontend:** `npm run dev` → localhost:3000
-**Backend:** `uv run langflow run --dev` → localhost:7860
+| Aspect | Development | Production |
+|--------|-------------|------------|
+| **Frontend** | `npm run dev` on port 3000 | Served by backend |
+| **Backend** | `uv run langflow run --dev` on port 7860 | Same port, frontend bundled |
+| **Database** | SQLite | PostgreSQL recommended |
+| **Cache** | In-memory | Redis recommended |
+| **Storage** | Local filesystem | S3/GCS recommended |
 
-In development:
-- Frontend proxies API calls to backend
-- Hot-reloading enabled for both
-- Debug logging available
+## Production Architecture
 
-## Production Deployment
-
-Recommended architecture:
 ```
 Internet → Load Balancer → Langflow Instances → PostgreSQL
                                              → Redis (cache)
                                              → S3 (files)
 ```
 
-Key considerations:
-- Use PostgreSQL instead of SQLite
-- Enable Redis for caching
-- Configure external file storage
-- Set proper `LANGFLOW_SECRET_KEY`
-- Enable authentication (`LANGFLOW_AUTO_LOGIN=False`)
+Key configurations:
+- `LANGFLOW_SECRET_KEY`: Secure secret for JWT
+- `LANGFLOW_AUTO_LOGIN=False`: Enable authentication
+- `LANGFLOW_DATABASE_URL`: PostgreSQL connection string

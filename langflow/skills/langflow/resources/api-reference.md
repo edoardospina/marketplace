@@ -1,6 +1,6 @@
 # Langflow API Reference
 
-This document provides a comprehensive reference for the Langflow REST API (v1.7.1).
+This document provides a comprehensive reference for the Langflow REST API (v1.7.1). The API includes **104 endpoints** covering flow management, execution, MCP integration, knowledge bases, and more.
 
 ## Base URL
 
@@ -8,32 +8,86 @@ This document provides a comprehensive reference for the Langflow REST API (v1.7
 https://your-langflow-instance.com/api/v1
 ```
 
+For v2 endpoints:
+```
+https://your-langflow-instance.com/api/v2
+```
+
 ## Authentication
 
-Langflow supports two authentication methods:
+Langflow supports three authentication methods:
 
-### API Key Authentication (Recommended for Programmatic Access)
+### 1. OAuth2 Password Flow (Session-Based)
 
-Include your API key in the request header:
+For browser-based access and session authentication. Obtain tokens via the login endpoint:
+
+```
+POST /api/v1/login
+```
+
+**Request (form-urlencoded):**
+
+```bash
+curl -X POST https://your-instance.com/api/v1/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=YOUR_USERNAME&password=YOUR_PASSWORD"
+```
+
+**Response:**
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer"
+}
+```
+
+Use the access token in subsequent requests:
+
+```bash
+curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  https://your-instance.com/api/v1/flows/
+```
+
+### 2. API Key Authentication - Header (Recommended)
+
+Include your API key in the `x-api-key` request header:
 
 ```bash
 curl -H "x-api-key: YOUR_API_KEY" https://your-instance.com/api/v1/flows/
 ```
 
-Or as a query parameter:
+### 3. API Key Authentication - Query Parameter
+
+Pass your API key as a query parameter (useful for webhooks and simple integrations):
 
 ```bash
 curl "https://your-instance.com/api/v1/flows/?x-api-key=YOUR_API_KEY"
 ```
 
-### Session Authentication (Browser-Based)
+**Note:** Header-based authentication is preferred over query parameters for security reasons.
 
-For browser-based access, use OAuth2 password flow:
+---
 
-```bash
-curl -X POST https://your-instance.com/api/v1/login \
-  -d "username=YOUR_USERNAME&password=YOUR_PASSWORD"
-```
+## API Endpoint Categories
+
+Quick reference for the 104 available endpoints:
+
+| Category | Base Path | Description |
+|----------|-----------|-------------|
+| **Run** | `/api/v1/run/` | Execute flows (simplified, advanced, session-based) |
+| **Flows** | `/api/v1/flows/` | CRUD operations for flows |
+| **Build** | `/api/v1/build/` | Build and process flow graphs |
+| **Webhooks** | `/api/v1/webhook/` | Trigger flows via webhooks |
+| **MCP** | `/api/v1/mcp/` | Model Context Protocol integration |
+| **Knowledge Bases** | `/api/v1/knowledge_bases/` | RAG knowledge base management |
+| **Store** | `/api/v1/store/` | Component marketplace |
+| **Variables** | `/api/v1/variables/` | Secrets and configuration |
+| **Validation** | `/api/v1/validate/` | Code and prompt validation |
+| **Custom Components** | `/api/v1/custom_component` | Custom component management |
+| **Files v2** | `/api/v2/files/` | User-scoped file operations |
+| **MCP Servers v2** | `/api/v2/mcp/servers` | Enhanced MCP server management |
 
 ---
 
@@ -762,6 +816,647 @@ GET /api/v1/mcp/project/{project_id}/installed
 ```bash
 curl -X GET "https://your-instance.com/api/v1/mcp/project/project-uuid/installed" \
   -H "x-api-key: YOUR_API_KEY"
+```
+
+---
+
+## Knowledge Bases Endpoints
+
+Manage knowledge bases for RAG (Retrieval-Augmented Generation) workflows.
+
+### List Knowledge Bases
+
+Retrieve all knowledge bases for the current user.
+
+```
+GET /api/v1/knowledge_bases/
+```
+
+#### Example
+
+```bash
+curl -X GET "https://your-instance.com/api/v1/knowledge_bases/" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+#### Response
+
+```json
+[
+  {
+    "id": "kb-uuid",
+    "name": "Product Documentation",
+    "description": "Company product docs and FAQs",
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-20T14:00:00Z",
+    "document_count": 45,
+    "embedding_model": "text-embedding-ada-002"
+  }
+]
+```
+
+---
+
+### Get Knowledge Base
+
+Retrieve a specific knowledge base by ID.
+
+```
+GET /api/v1/knowledge_bases/{knowledge_base_id}
+```
+
+#### Example
+
+```bash
+curl -X GET "https://your-instance.com/api/v1/knowledge_bases/kb-uuid" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+---
+
+### Create Knowledge Base
+
+Create a new knowledge base.
+
+```
+POST /api/v1/knowledge_bases/
+```
+
+#### Request Body
+
+```json
+{
+  "name": "New Knowledge Base",
+  "description": "Description of the knowledge base",
+  "embedding_model": "text-embedding-ada-002"
+}
+```
+
+#### Example
+
+```bash
+curl -X POST "https://your-instance.com/api/v1/knowledge_bases/" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Support Documentation",
+    "description": "Customer support articles and guides"
+  }'
+```
+
+---
+
+### Update Knowledge Base
+
+Update an existing knowledge base.
+
+```
+PATCH /api/v1/knowledge_bases/{knowledge_base_id}
+```
+
+---
+
+### Delete Knowledge Base
+
+Delete a knowledge base and all its documents.
+
+```
+DELETE /api/v1/knowledge_bases/{knowledge_base_id}
+```
+
+---
+
+### Add Documents to Knowledge Base
+
+Upload documents to a knowledge base.
+
+```
+POST /api/v1/knowledge_bases/{knowledge_base_id}/documents
+```
+
+#### Example
+
+```bash
+curl -X POST "https://your-instance.com/api/v1/knowledge_bases/kb-uuid/documents" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -F "files=@document1.pdf" \
+  -F "files=@document2.txt"
+```
+
+---
+
+### Search Knowledge Base
+
+Query a knowledge base for relevant documents.
+
+```
+POST /api/v1/knowledge_bases/{knowledge_base_id}/search
+```
+
+#### Request Body
+
+```json
+{
+  "query": "How do I reset my password?",
+  "top_k": 5,
+  "threshold": 0.7
+}
+```
+
+---
+
+## Store Endpoints (Component Marketplace)
+
+Access the Langflow component marketplace to browse, share, and download components.
+
+### List Store Components
+
+Browse available components in the marketplace.
+
+```
+GET /api/v1/store/
+```
+
+#### Query Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `category` | string | Filter by component category |
+| `search` | string | Search query |
+| `page` | integer | Page number |
+| `size` | integer | Page size |
+
+#### Example
+
+```bash
+curl -X GET "https://your-instance.com/api/v1/store/?category=llm&page=1&size=20" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+---
+
+### Get Store Component
+
+Get details of a specific component from the store.
+
+```
+GET /api/v1/store/{component_id}
+```
+
+---
+
+### Download Store Component
+
+Download a component from the marketplace.
+
+```
+POST /api/v1/store/{component_id}/download
+```
+
+---
+
+### Upload to Store
+
+Publish a component to the marketplace.
+
+```
+POST /api/v1/store/
+```
+
+#### Request Body
+
+```json
+{
+  "name": "My Custom Component",
+  "description": "A custom LLM wrapper",
+  "category": "llm",
+  "component_data": { ... },
+  "tags": ["llm", "custom", "wrapper"]
+}
+```
+
+---
+
+## Variables Endpoints (Secrets and Configuration)
+
+Manage global variables, secrets, and configuration values.
+
+### List Variables
+
+Retrieve all variables for the current user.
+
+```
+GET /api/v1/variables/
+```
+
+#### Example
+
+```bash
+curl -X GET "https://your-instance.com/api/v1/variables/" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+#### Response
+
+```json
+[
+  {
+    "id": "var-uuid",
+    "name": "OPENAI_API_KEY",
+    "type": "credential",
+    "value": "sk-***masked***",
+    "created_at": "2024-01-15T10:30:00Z"
+  },
+  {
+    "id": "var-uuid-2",
+    "name": "DEFAULT_MODEL",
+    "type": "generic",
+    "value": "gpt-4",
+    "created_at": "2024-01-15T10:30:00Z"
+  }
+]
+```
+
+---
+
+### Get Variable
+
+Retrieve a specific variable.
+
+```
+GET /api/v1/variables/{variable_id}
+```
+
+---
+
+### Create Variable
+
+Create a new variable or secret.
+
+```
+POST /api/v1/variables/
+```
+
+#### Request Body
+
+```json
+{
+  "name": "MY_SECRET_KEY",
+  "value": "secret-value-here",
+  "type": "credential"
+}
+```
+
+#### Variable Types
+
+| Type | Description |
+|------|-------------|
+| `credential` | Sensitive values (API keys, passwords) - masked in responses |
+| `generic` | General configuration values |
+
+#### Example
+
+```bash
+curl -X POST "https://your-instance.com/api/v1/variables/" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "ANTHROPIC_API_KEY",
+    "value": "sk-ant-...",
+    "type": "credential"
+  }'
+```
+
+---
+
+### Update Variable
+
+Update an existing variable.
+
+```
+PATCH /api/v1/variables/{variable_id}
+```
+
+---
+
+### Delete Variable
+
+Delete a variable.
+
+```
+DELETE /api/v1/variables/{variable_id}
+```
+
+---
+
+## Validation Endpoints
+
+Validate code and prompts before deployment.
+
+### Validate Code
+
+Validate Python code for custom components.
+
+```
+POST /api/v1/validate/code
+```
+
+#### Request Body
+
+```json
+{
+  "code": "from langflow.custom import Component\n\nclass MyComponent(Component):\n    ..."
+}
+```
+
+#### Example
+
+```bash
+curl -X POST "https://your-instance.com/api/v1/validate/code" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "from langflow.custom import Component\n\nclass MyComponent(Component):\n    display_name = \"My Component\"\n    \n    def build(self):\n        return \"Hello\""
+  }'
+```
+
+#### Response (Valid)
+
+```json
+{
+  "valid": true,
+  "errors": [],
+  "warnings": []
+}
+```
+
+#### Response (Invalid)
+
+```json
+{
+  "valid": false,
+  "errors": [
+    {
+      "line": 5,
+      "message": "Missing required method 'build_config'"
+    }
+  ],
+  "warnings": []
+}
+```
+
+---
+
+### Validate Prompt
+
+Validate a prompt template.
+
+```
+POST /api/v1/validate/prompt
+```
+
+#### Request Body
+
+```json
+{
+  "template": "You are a {role}. Answer questions about {topic}.",
+  "variables": ["role", "topic"]
+}
+```
+
+#### Example
+
+```bash
+curl -X POST "https://your-instance.com/api/v1/validate/prompt" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "template": "You are a {role}. Help the user with {task}."
+  }'
+```
+
+---
+
+## Custom Component Endpoints
+
+Manage custom components.
+
+### List Custom Components
+
+Get all custom components for the current user.
+
+```
+GET /api/v1/custom_component
+```
+
+#### Example
+
+```bash
+curl -X GET "https://your-instance.com/api/v1/custom_component" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+---
+
+### Get Custom Component
+
+Get a specific custom component.
+
+```
+GET /api/v1/custom_component/{component_id}
+```
+
+---
+
+### Create Custom Component
+
+Create a new custom component from code.
+
+```
+POST /api/v1/custom_component
+```
+
+#### Request Body
+
+```json
+{
+  "name": "MyCustomLLM",
+  "code": "from langflow.custom import Component\nfrom langflow.io import Output\n\nclass MyCustomLLM(Component):\n    display_name = 'My Custom LLM'\n    description = 'A custom LLM component'\n    \n    outputs = [\n        Output(display_name='Response', name='response', method='generate')\n    ]\n    \n    def generate(self) -> str:\n        return 'Hello from custom component!'"
+}
+```
+
+---
+
+### Update Custom Component
+
+Update an existing custom component.
+
+```
+PATCH /api/v1/custom_component/{component_id}
+```
+
+---
+
+### Delete Custom Component
+
+Delete a custom component.
+
+```
+DELETE /api/v1/custom_component/{component_id}
+```
+
+---
+
+## v2 API Endpoints
+
+Version 2 of the API with enhanced functionality and user-scoped operations.
+
+### Files v2
+
+User-scoped file operations with enhanced metadata support.
+
+#### List Files (v2)
+
+```
+GET /api/v2/files/
+```
+
+Returns files scoped to the authenticated user with enhanced metadata.
+
+#### Example
+
+```bash
+curl -X GET "https://your-instance.com/api/v2/files/" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+#### Response
+
+```json
+{
+  "files": [
+    {
+      "id": "file-uuid",
+      "name": "document.pdf",
+      "size": 1024000,
+      "mime_type": "application/pdf",
+      "user_id": "user-uuid",
+      "created_at": "2024-01-15T10:30:00Z",
+      "metadata": {
+        "pages": 15,
+        "processed": true
+      }
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "size": 50
+}
+```
+
+---
+
+#### Upload File (v2)
+
+```
+POST /api/v2/files/
+```
+
+#### Example
+
+```bash
+curl -X POST "https://your-instance.com/api/v2/files/" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -F "file=@document.pdf" \
+  -F "metadata={\"description\": \"Important doc\"}"
+```
+
+---
+
+#### Get File (v2)
+
+```
+GET /api/v2/files/{file_id}
+```
+
+---
+
+#### Delete File (v2)
+
+```
+DELETE /api/v2/files/{file_id}
+```
+
+---
+
+### MCP Servers v2
+
+Enhanced MCP server management with v2 API.
+
+#### List MCP Servers (v2)
+
+```
+GET /api/v2/mcp/servers
+```
+
+Returns configured MCP servers with enhanced metadata.
+
+#### Example
+
+```bash
+curl -X GET "https://your-instance.com/api/v2/mcp/servers" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+#### Response
+
+```json
+{
+  "servers": [
+    {
+      "id": "server-uuid",
+      "name": "My MCP Server",
+      "url": "https://mcp-server.example.com",
+      "status": "connected",
+      "tools": ["tool1", "tool2"],
+      "last_ping": "2024-01-15T10:30:00Z"
+    }
+  ]
+}
+```
+
+---
+
+#### Create MCP Server (v2)
+
+```
+POST /api/v2/mcp/servers
+```
+
+#### Request Body
+
+```json
+{
+  "name": "Custom MCP Server",
+  "url": "https://my-mcp-server.example.com",
+  "api_key": "optional-api-key"
+}
+```
+
+---
+
+#### Update MCP Server (v2)
+
+```
+PATCH /api/v2/mcp/servers/{server_id}
+```
+
+---
+
+#### Delete MCP Server (v2)
+
+```
+DELETE /api/v2/mcp/servers/{server_id}
 ```
 
 ---
